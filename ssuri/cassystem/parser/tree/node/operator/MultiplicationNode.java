@@ -14,6 +14,17 @@ public class MultiplicationNode extends Node
     public List<Node> children = new LinkedList<>();
 
     @Override
+    public Node makeCopy()
+    {
+        MultiplicationNode copy = new MultiplicationNode();
+        for(Node child : children)
+        {
+            copy.children.add(child.makeCopy());
+        }
+        return copy;
+    }
+    
+    @Override
     public Node simplify()
     {
         if(children.size() == 1)
@@ -183,5 +194,13 @@ public class MultiplicationNode extends Node
         }
         else if (!children.equals(other.children)) return false;
         return true;
+    }
+
+    @Override
+    public Node derive()
+    {
+        AdditionNode derivative = new AdditionNode();
+        
+        return derivative;
     }
 }

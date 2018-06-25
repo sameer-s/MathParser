@@ -12,6 +12,17 @@ public class AdditionNode extends Node
     public List<Node> children = new LinkedList<>();
 
     @Override
+    public Node makeCopy()
+    {
+        AdditionNode copy = new AdditionNode();
+        for(Node child : children)
+        {
+            copy.children.add(child.makeCopy());
+        }
+        return copy;
+    }
+    
+    @Override
     public Node simplify()
     {
         // Levels addition operators (a + (b + c)) becomes (a + b + c)
@@ -85,7 +96,7 @@ public class AdditionNode extends Node
     protected int compareToSameType(Node other)
     {
         AdditionNode otherAddition = ((AdditionNode) other);
-        sort();
+        sort(); 
         otherAddition.sort();
         int sizeCompare = Integer.compare(children.size(), otherAddition.children.size());
         if(sizeCompare != 0)
@@ -127,5 +138,16 @@ public class AdditionNode extends Node
         }
         else if (!children.equals(other.children)) return false;
         return true;
+    }
+
+    @Override
+    public Node derive()
+    {
+        AdditionNode an = new AdditionNode();
+        for(Node child : children)
+        {
+            an.children.add(child.derive());
+        }
+        return an;
     }
 }

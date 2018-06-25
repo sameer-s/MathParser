@@ -6,9 +6,16 @@ import ssuri.cassystem.parser.tree.node.Node;
 public class VariableNode extends Node
 {
     public String name;
+    
     public VariableNode(String name)
     {
         this.name = name;
+    }
+    
+    @Override
+    public Node makeCopy()
+    { 
+        return new VariableNode(name);
     }
 
     @Override
@@ -58,5 +65,12 @@ public class VariableNode extends Node
         }
         else if (!name.equals(other.name)) return false;
         return true;
+    }
+
+    @Override
+    public Node derive()
+    {
+        // TODO Auto-generated method stub
+        return null;
     }
 }

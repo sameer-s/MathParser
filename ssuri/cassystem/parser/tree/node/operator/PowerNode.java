@@ -6,6 +6,16 @@ import ssuri.cassystem.parser.tree.node.Node;
 public class PowerNode extends Node
 {
     public Node base, exponent;
+    
+    @Override
+    public Node makeCopy()
+    {
+        PowerNode copy = new PowerNode();
+        copy.base = base.makeCopy();
+        copy.exponent = exponent.makeCopy();
+        return copy;
+    }
+    
     @Override
     public Node simplify()
     {   
@@ -67,5 +77,12 @@ public class PowerNode extends Node
         }
         else if (!exponent.equals(other.exponent)) return false;
         return true;
+    }
+
+    @Override
+    public Node derive()
+    {
+        // TODO Auto-generated method stub
+        return null;
     }
 }

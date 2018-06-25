@@ -10,6 +10,14 @@ public class UnaryNegativeNode extends Node
     public Node child;
 
     @Override
+    public Node makeCopy()
+    {
+        UnaryNegativeNode copy = new UnaryNegativeNode();
+        copy.child = child.makeCopy();
+        return copy;
+    }
+    
+    @Override
     public Node simplify()
     {
         // Replaces unary negation (-a) with multiplication (-1 * a)
@@ -64,5 +72,12 @@ public class UnaryNegativeNode extends Node
         }
         else if (!child.equals(other.child)) return false;
         return true;
+    }
+
+    @Override
+    public Node derive()
+    {
+        // TODO Auto-generated method stub
+        return null;
     }
 }

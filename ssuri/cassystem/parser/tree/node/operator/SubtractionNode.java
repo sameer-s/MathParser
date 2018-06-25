@@ -10,6 +10,15 @@ public class SubtractionNode extends Node
     public Node positive, negative;
 
     @Override
+    public Node makeCopy()
+    {
+        SubtractionNode copy = new SubtractionNode();
+        copy.positive = positive.makeCopy();
+        copy.negative = negative.makeCopy();
+        return copy;
+    }
+    
+    @Override
     public Node simplify()
     {
         // Replaces subtraction (a - b) with addition & multiplication (a + (-1 * b))
@@ -79,5 +88,12 @@ public class SubtractionNode extends Node
         }
         else if (!positive.equals(other.positive)) return false;
         return true;
+    }
+
+    @Override
+    public Node derive()
+    {
+        // TODO Auto-generated method stub
+        return null;
     }
 }

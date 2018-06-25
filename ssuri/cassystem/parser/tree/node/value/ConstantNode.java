@@ -7,12 +7,18 @@ import ssuri.cassystem.parser.tree.node.Node;
 public class ConstantNode extends Node
 {
     public Fraction value;
-
+    
     public ConstantNode(Fraction value)
     {
         this.value = value;
     }
 
+    @Override
+    public Node makeCopy()
+    {
+        return new ConstantNode(new Fraction(value.numerator, value.denominator));
+    }
+    
     @Override
     public Node simplify()
     {
@@ -60,5 +66,12 @@ public class ConstantNode extends Node
         }
         else if (!value.equals(other.value)) return false;
         return true;
+    }
+
+    @Override
+    public Node derive()
+    {
+        // TODO Auto-generated method stub
+        return null;
     }
 }

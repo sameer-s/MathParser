@@ -1,11 +1,23 @@
 package ssuri.cassystem.parser.tree.node.operator;
 
 import javafx.scene.control.TreeItem;
+import ssuri.cassystem.math.Fraction;
 import ssuri.cassystem.parser.tree.node.Node;
+import ssuri.cassystem.parser.tree.node.value.ConstantNode;
 
 public class DivisionNode extends Node
 {
     public Node numerator, denominator;
+    
+    @Override
+    public Node makeCopy()
+    {
+        DivisionNode copy = new DivisionNode();
+        copy.numerator = numerator.makeCopy();
+        copy.denominator = denominator.makeCopy();
+        return copy;
+    }
+    
     @Override
     public Node simplify()
     {
@@ -100,5 +112,27 @@ public class DivisionNode extends Node
         }
         else if (!numerator.equals(other.numerator)) return false;
         return true;
+    }
+
+    @Override
+    public Node derive()
+    {
+        // ((l * dh) - (h * dl) / (l * l))
+        MultiplicationNode ldh = new MultiplicationNode();
+        ldh.children.add(denominator.makeCopy());
+        ldh.children.add(numerator.makeCopy().derive());
+        MultiplicationNode hdl = new MultiplicationNode();
+        hdl.children.add(numerator.makeCopy());
+        hdl.children.add(denominator.makeCopy().derive());
+        SubtractionNode top = new SubtractionNode();
+        top.positive = ldh;
+        top.negative = hdl;
+        PowerNode bottom = new PowerNode();
+        bottom.base = denominator.makeCopy();
+        bottom.exponent = new ConstantNode(new Fraction(2, 1));
+        DivisionNode derivative = new DivisionNode();
+        derivative.numerator = top;
+        derivative.denominator = bottom;
+        return derivative;
     }
 }

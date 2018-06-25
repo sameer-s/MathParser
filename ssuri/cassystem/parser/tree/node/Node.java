@@ -4,6 +4,7 @@ import javafx.scene.control.TreeItem;
 
 public abstract class Node
 {
+    public abstract Node makeCopy();
     public abstract Node simplify();
     public abstract TreeItem<String> getGuiItem();
     public int compareTo(Node other)
@@ -27,7 +28,9 @@ public abstract class Node
         
         return node.getGuiItem();
     }
-    
+        
     @Override public abstract int hashCode();
     @Override public abstract boolean equals(Object obj);
+    
+    public abstract Node derive();
 }
