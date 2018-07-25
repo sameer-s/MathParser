@@ -10,25 +10,21 @@ import java.util.List;
 import ssuri.cassystem.math.Fraction;
 import ssuri.cassystem.parser.tokenizer.Token;
 import ssuri.cassystem.parser.tokenizer.TokenType;
-import ssuri.cassystem.parser.tree.SyntaxTree;
-import ssuri.cassystem.parser.tree.node.Node;
-import ssuri.cassystem.parser.tree.node.operator.AdditionNode;
-import ssuri.cassystem.parser.tree.node.operator.DivisionNode;
-import ssuri.cassystem.parser.tree.node.operator.MultiplicationNode;
-import ssuri.cassystem.parser.tree.node.operator.PowerNode;
-import ssuri.cassystem.parser.tree.node.operator.SubtractionNode;
-import ssuri.cassystem.parser.tree.node.operator.UnaryNegativeNode;
-import ssuri.cassystem.parser.tree.node.value.ConstantNode;
-import ssuri.cassystem.parser.tree.node.value.VariableNode;
+import ssuri.cassystem.tree.SyntaxTree;
+import ssuri.cassystem.tree.node.Node;
+import ssuri.cassystem.tree.node.operator.AdditionNode;
+import ssuri.cassystem.tree.node.operator.DivisionNode;
+import ssuri.cassystem.tree.node.operator.ExponentiationNode;
+import ssuri.cassystem.tree.node.operator.MultiplicationNode;
+import ssuri.cassystem.tree.node.operator.OperatorNode;
+import ssuri.cassystem.tree.node.operator.SubtractionNode;
+import ssuri.cassystem.tree.node.value.ConstantNode;
+import ssuri.cassystem.tree.node.value.VariableNode;
+import ssuri.cassystem.util.Log;
 
 public class Parser
-{
+{   
     public SyntaxTree parse(List<Token> tokensToParse)
-    {
-        return parse(tokensToParse, true);
-    }
-    
-    public SyntaxTree parse(List<Token> tokensToParse, boolean doSimplify)
     {
         Node root = null;
         
@@ -90,7 +86,7 @@ public class Parser
             outputQueue.addLast(operatorStack.pop());
         }
         
-        System.out.println(outputQueue);
+        Log.d("Output Queue: %s", outputQueue);
         
         // Step 2: Read values from the stack and apply operators in creating the tree
         // Eventually, integrate this with the previous part (to make it more efficient),
@@ -104,7 +100,7 @@ public class Parser
             {
                 case OPEN_PARENTHESIS:
                 case CLOSE_PARENTHESIS:
-                    throw new IllegalStateException("Parentheses should be removed during shunting yard");
+                    throw new IllegalStateException("Parentheses should be removed during parse step 1");
                 case INTEGER:
                     valueStack.push(new ConstantNode(new Fraction(Integer.parseInt(token.string), 1)));
                     break;
@@ -112,31 +108,21 @@ public class Parser
                     valueStack.push(new VariableNode(token.string));
                     break;
                 case UNARY_MINUS:
-                    UnaryNegativeNode unn = new UnaryNegativeNode();
-                    if(root == null) unn.child = valueStack.pop();
-                    else unn.child = root;
-                    root = unn;
+                    Node child = root == null ? valueStack.pop() : root;
+                    root = new MultiplicationNode(ConstantNode.NEGATIVE_ONE, child);
                     break;
                 case PLUS:
                 case MINUS:
                 case MULTIPLY:
                 case DIVIDE:
                 case POWER:
-                    if(root == null)
-                    {
-                        root = getBinaryOperatorNode(token.type, valueStack.pop(), valueStack.pop());
-                    }
-                    else if(valueStack.size() == 1)
-                    {
-                        root = getBinaryOperatorNode(token.type, valueStack.pop(), root);
-                    }
-                    else
-                    {
-                        valueStack.push(getBinaryOperatorNode(token.type, valueStack.pop(), valueStack.pop()));
-                    }
+                    Log.d("Current value stack state: %s", valueStack);
+                    valueStack.push(getOperator(token.type, valueStack.pop(), valueStack.pop()));
                     break;
             }
         }
+        
+        root = valueStack.pop();
         
         if(valueStack.size() != 0)
         {
@@ -144,50 +130,27 @@ public class Parser
             {
                 throw new IllegalStateException("Dangling values (numbers or variables)");
             }     
-            
-            if(root == null)
-            {
-                root = valueStack.pop();
-            }
+
+            root = valueStack.pop();
         }
-        
-        SyntaxTree tree = new SyntaxTree(root);
-        if(doSimplify)
-        {
-            tree.simplify();
-        }
-        return tree;
+ 
+        return new SyntaxTree(root);
     }
     
-    private Node getBinaryOperatorNode(TokenType type, Node child1, Node child2)
+    private OperatorNode getOperator(TokenType type, Node child1, Node child2)
     {
         switch(type)
         {
-            case PLUS:
-                AdditionNode an = new AdditionNode();
-                an.children.add(child1);
-                an.children.add(child2);
-                return an;
+            case PLUS:  
+                return new AdditionNode(child2, child1);
             case MINUS:
-                SubtractionNode sn = new SubtractionNode();
-                sn.negative = child1;
-                sn.positive = child2;
-                return sn;
+                return new SubtractionNode(child2, child1);
             case MULTIPLY:
-                MultiplicationNode mn = new MultiplicationNode();
-                mn.children.add(child1);
-                mn.children.add(child2);
-                return mn;
+                return new MultiplicationNode(child2, child1);
             case DIVIDE:
-                DivisionNode dn = new DivisionNode();
-                dn.denominator = child1;
-                dn.numerator = child2;
-                return dn;
+                return new DivisionNode(child2, child1);
             case POWER:
-                PowerNode pn = new PowerNode();
-                pn.exponent = child1;
-                pn.base = child2;
-                return pn;
+                return new ExponentiationNode(child2, child1);
             default:
                 throw new IllegalArgumentException(type + " is not a binary operator type.");       
         }

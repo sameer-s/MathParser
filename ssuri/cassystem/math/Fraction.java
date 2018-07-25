@@ -21,19 +21,32 @@ public class Fraction
         this.numerator = numerator;
         this.denominator = denominator;
     }
-    
+
+    public static Fraction add(Fraction f1, Fraction f2)
+    {
+        Fraction add = new Fraction(f1.numerator.multiply(f2.denominator).add(f2.numerator.multiply(f1.denominator)), f1.denominator.multiply(f2.denominator));
+        add.reduce();
+        return add;
+    }
+
     public static Fraction multiply(Fraction f1, Fraction f2)
     {
         Fraction mult = new Fraction(f1.numerator.multiply(f2.numerator), f1.denominator.multiply(f2.denominator));
         mult.reduce();
         return mult;
     }
-    
-    public void reduce()
+
+    public static Fraction reciprocal(Fraction f)
+    {
+        return new Fraction(f.denominator, f.numerator);
+    }
+
+    public Fraction reduce()
     {
         BigInteger gcd = numerator.gcd(denominator);
-        numerator = numerator.divide(gcd);
-        denominator = denominator.divide(gcd);
+        BigInteger newNumerator = numerator.divide(gcd);
+        BigInteger newDenominator = denominator.divide(gcd);
+        return new Fraction(newNumerator, newDenominator);
     }
 
     public int compareTo(Fraction other)
@@ -51,23 +64,28 @@ public class Fraction
         return result;
     }
 
+    public boolean isZero()
+    {
+        return numerator.equals(BigInteger.ZERO);
+    }
+
     @Override
     public boolean equals(Object obj)
     {
         if (this == obj) return true;
-        if (obj == null) return false;
-        if (getClass() != obj.getClass()) return false;
+
+        if(!(obj instanceof Fraction))
+        {
+            return false;
+        }
+
         Fraction other = (Fraction) obj;
-        if (denominator == null)
+
+        if(other.numerator.equals(numerator) && other.denominator.equals(denominator))
         {
-            if (other.denominator != null) return false;
+            return true;
         }
-        else if (!denominator.equals(other.denominator)) return false;
-        if (numerator == null)
-        {
-            if (other.numerator != null) return false;
-        }
-        else if (!numerator.equals(other.numerator)) return false;
-        return true;
+
+        return numerator.multiply(other.denominator).equals(denominator.multiply(other.numerator));
     }
 }

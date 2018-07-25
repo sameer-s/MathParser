@@ -5,7 +5,7 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
-import ssuri.cassystem.parser.tree.SyntaxTree;
+import ssuri.cassystem.tree.SyntaxTree;
  
 public abstract class SyntaxTreeRenderer extends Application 
 {    
@@ -20,16 +20,13 @@ public abstract class SyntaxTreeRenderer extends Application
     {
         primaryStage.setTitle("Syntax Tree Renderer");        
         
-        TreeItem<String> largeTreeRoot = new TreeItem<String>("Trees");
-        TreeView<String> treeView = new TreeView<String>(largeTreeRoot);        
+        TreeItem<String> largeTreeRoot = new TreeItem<>("Trees");
+        TreeView<String> treeView = new TreeView<>(largeTreeRoot);
         largeTreeRoot.setExpanded(true);
 
         for(SyntaxTree tree : trees)
         {
-            TreeItem<String> rootItem;
-            if(tree == null) rootItem = new TreeItem<String> ("Tree is null");
-            else if(tree.root == null) rootItem = new TreeItem<String> ("Tree root is null");
-            else rootItem = tree.root.getGuiItem();
+            TreeItem<String> rootItem = tree == null ? new TreeItem<> ("Tree is null") : tree.getGuiItem();
             largeTreeRoot.getChildren().add(rootItem);
         }
         

@@ -5,27 +5,22 @@ import ssuri.cassystem.parser.Parser;
 import ssuri.cassystem.parser.tokenizer.Tokenizer;
 import ssuri.cassystem.tree.SyntaxTree;
 
-public class ParserRendererTest extends SyntaxTreeRenderer
+public class DerivativeRendererTest extends SyntaxTreeRenderer
 {
     private static String[] strings = 
     {
-            "3/2*x^2",
-            "(3/2)*x^2",
-            "3*x^2 + x^3 + 17 + 5*x",
-            "x^3 + 3*x^2 + 5*x + 17",
-            "17 + 3*x^2 + 5*x + x^3",
-            "5*x + x^3 + 3*x^2 + 17"
+            "x^2 * 3*x",
     };
     private static SyntaxTree[] trees = new SyntaxTree[strings.length];
     static
-    {        
+    {     
         for(int i = 0; i < strings.length; i++)
         {
-            trees[i] = new Parser().parse(new Tokenizer().tokenize(strings[i]));
+            trees[i] = new Parser().parse(new Tokenizer().tokenize(strings[i])).derive();
         }
     }
     
-    public ParserRendererTest()
+    public DerivativeRendererTest()
     {    
         super(trees);
     }
