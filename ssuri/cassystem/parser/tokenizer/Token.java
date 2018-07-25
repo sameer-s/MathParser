@@ -35,4 +35,9 @@ public class Token
         
         return type.precedence;
     }
+
+    public static boolean shouldMatchUnaryNegative(Token previousToken)
+    {
+        return previousToken.isOperator() || previousToken.type == TokenType.OPEN_PARENTHESIS;
+    }
 }

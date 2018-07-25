@@ -32,9 +32,18 @@ public class Parser
         Deque<Token> outputQueue = new ArrayDeque<>();
         Deque<Token> operatorStack = new ArrayDeque<>();
 
+        for(int i = 0; i < tokens.size(); i++)
+        {
+            if(tokens.get(i).type == TokenType.MINUS && (i == 0 || Token.shouldMatchUnaryNegative(tokens.get(i - 1))))
+            {
+                tokens.get(i).type = TokenType.UNARY_MINUS;
+            }
+        }
+
         while(tokens.size() > 0)
         {
             Token token = tokens.remove(0);
+
             switch(token.type)
             {
                 case INTEGER:
@@ -89,8 +98,7 @@ public class Parser
         Log.d("Output Queue: %s", outputQueue);
         
         // Step 2: Read values from the stack and apply operators in creating the tree
-        // Eventually, integrate this with the previous part (to make it more efficient),
-        // generating the tree as the tokens are initially read.
+        // TODO Eventually, integrate this with the previous part (to make it more efficient), generating the tree as the tokens are initially read.
         Deque<Node> valueStack = new ArrayDeque<>();
         while(outputQueue.size() > 0)
         {

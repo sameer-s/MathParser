@@ -24,12 +24,8 @@ public class Tokenizer
                 if (m.find())
                 {
                     String token = m.group().trim();
-                    Token previousToken = tokens.size() == 0 ? null : tokens.get(tokens.size() - 1);
-                    if(!type.handler.shouldMatchToken(token, previousToken)) break;
-                    
                     matchFound = true;    
                     tokens.add(new Token(type, token));
-
                     stringToTokenize = m.replaceFirst("").trim();
                     break;
                 }
