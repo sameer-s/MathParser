@@ -24,7 +24,7 @@ public class Tokenizer
                 if (m.find())
                 {
                     String token = m.group().trim();
-                    matchFound = true;    
+                    matchFound = true;
                     tokens.add(new Token(type, token));
                     stringToTokenize = m.replaceFirst("").trim();
                     break;

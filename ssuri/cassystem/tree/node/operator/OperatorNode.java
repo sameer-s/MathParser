@@ -19,12 +19,37 @@ public abstract class OperatorNode extends Node implements Cloneable
 
         this.operands = operands;
     }
+
     
     protected OperatorNode(Stream<Node> operandStream)
     {
         this(operandStream.toArray(Node[]::new));
     }
-    
+
+    /**
+     * Creates an OperatorNode based on the type of an existing one.
+     * @param old The existing OperatorNode.
+     * @param operands The operands of the new operator node.
+     * @return A new OperatorNode with the same implementation as "old" and has operands "operands"
+     */
+    public static OperatorNode of(OperatorNode old, Node... operands)
+    {
+        OperatorNode newNode;
+        try
+        {
+            newNode = (OperatorNode) old.clone();
+        }
+        catch (CloneNotSupportedException e)
+        {
+            throw new RuntimeException(e);
+        }
+
+        // FIXME This breaks immutability - a better implementation later may be preferred.
+        newNode.operands = operands;
+        return newNode;
+    }
+
+
     public int getOperandCount()
     {
         return operands.length;
@@ -103,7 +128,6 @@ public abstract class OperatorNode extends Node implements Cloneable
             return false;
         }
         
-        // TODO: Re-implement this should be faster than O(n^2)
         Node[] thisOperands = this.getOperands();
         Node[] otherOperands = other.getOperands();
 
@@ -152,18 +176,7 @@ public abstract class OperatorNode extends Node implements Cloneable
                 Node[] newOperands = getOperands(); // returns a copy so it's okay
                 newOperands[i] = simplifiedOperand;
 
-                OperatorNode newNode;
-                try
-                {
-                    newNode = (OperatorNode) this.clone();
-                }
-                catch (CloneNotSupportedException e)
-                {
-                    throw new RuntimeException(e);
-                }
-
-                newNode.operands = newOperands; // TODO: find a better way of doing this
-                return newNode;
+                return OperatorNode.of(this, newOperands);
             }
         }
 
